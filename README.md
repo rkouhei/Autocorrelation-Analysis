@@ -45,3 +45,6 @@ $ python3 main.py
 
 計算モード`1`の場合は、1つの入力ファイルにつき、12個のファイルが出力される。(データ数の50%~100%だけずらしたファイル(6個) × インデックスの有無(2個))  
 計算モード`2`の場合は、1つの入力ファイルにつき、2個のファイルが出力される。(インデックスの有無(2個))
+
+## License
+"Autocorrelation-Analysis" is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
