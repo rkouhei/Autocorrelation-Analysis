@@ -188,14 +188,16 @@ class calc_acf:
                     part_iterations = int(iterations * i) # 計算回数をint型で作成
                     part_df = df_data[:part_iterations] # dfの上からpart_iterations分だけ取り出す
                     acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True) # 自己相関の計算
-                    out_pd = pd.Series(acf, index=df["times"][:part_iterations]) # 出力用にデータをpdで成形
+                    index = df["times"][:part_iterations]*0.0002 # 出力用indexの作成準備
+                    out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index]) # 出力用にデータをpdで成形
                     self.write_file(out_pd, path, percentage=i) # データの出力
             elif self.mode == "2":
-                part_iterations = int(self.iterations) # 計算回数をint型で作成
-                part_df = df_data[:part_iterations] # dfの上からpart_iterations分だけ取り出す
-                acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True) # 自己相関の計算
-                out_pd = pd.Series(acf, index=df["times"][:part_iterations])
-                self.write_file(out_pd, path) # データの出力
+                part_iterations = int(self.iterations)
+                part_df = df_data[:part_iterations]
+                acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True) 
+                index = df["times"][:part_iterations]*0.0002
+                out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
+                self.write_file(out_pd, path) 
             
             bar.update(1) # プログレスバーの更新
 
