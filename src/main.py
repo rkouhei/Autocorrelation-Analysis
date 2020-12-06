@@ -228,7 +228,7 @@ class calc_acf:
 
                 part_iterations = int(self.iterations[0])
                 part_df = part_df[:part_iterations]
-                acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True) 
+                acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True)
                 index = index["times"][:part_iterations]*0.0002
                 out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
                 self.write_file(out_pd, path) 
@@ -240,8 +240,8 @@ class calc_acf:
                     index = df.copy()
 
                     part_iterations = int(self.iterations[i])
+                    acf = sm.tsa.stattools.acf(acf, nlags=part_iterations, fft=True)
                     acf = acf[:part_iterations]
-                    acf = sm.tsa.stattools.acf(acf, nlags=part_iterations, fft=True) 
                     index = index["times"][:part_iterations]*0.0002
                     out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
                     self.write_file(out_pd, path, iteration=i)
