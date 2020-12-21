@@ -21,6 +21,7 @@ class calc_acf:
     mode = 0 # 計算モード選択用変数
     iterations = [] # 計算回数指定用変数
     path = "" # 読み込み対象のファイルへのパス
+    sep = "" # ファイルの区切り文字の種類
     out_dir = "" # 書き込みを行うディレクトリ
     CONTINUOUS = 3 # mode3のとき、何回連続して計算をするか
 
@@ -38,6 +39,9 @@ class calc_acf:
 
         print("分析したいファイルへのパスを入力してください: ", end="")
         path = input()
+
+        print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
+        sep = input()
 
         print("計算モードを選択してください(固定: 1, 任意: 2, 連続任意: 3): ", end="")
         mode = input()
@@ -70,6 +74,7 @@ class calc_acf:
         
         self.path = path
         self.mode = mode
+        self.sep = sep
 
     def numericalSort(self, value):
         """
@@ -91,6 +96,7 @@ class calc_acf:
         存在しないディレクトリやパスが指定された時。
         入力にテキストファイル以外のものが含まれている時。
         データ数よりずらす回数が多い時。
+        ファイルの区切り文字を誤選択した時。
         """
 
         df_array = [] # 読み込んだテキストの配列
@@ -114,13 +120,30 @@ class calc_acf:
                 print("テキストファイル以外のものが含まれています。")
                 exit()
 
-            df = pd.read_table(
-                file_path,
-                header=None,
-                sep=" ",
-                names=("times", "data"),
-                encoding="utf-8"
-            )
+            # データの読み込み
+            if self.sep == "1": # スペースの場合
+                df = pd.read_table(
+                    file_path,
+                    header=None,
+                    sep=" ",
+                    names=("times", "data"),
+                    encoding="utf-8"
+                )
+                df = df.dropna(how="all")
+                df = df.reset_index()
+            elif self.sep == "2": # タブの場合
+                df = pd.read_table(
+                    file_path,
+                    header=None,
+                    sep="\t",
+                    names=("times", "data"),
+                    encoding="utf-8"
+                )
+                df = df.dropna(how="all")
+                df = df.reset_index()
+            else:
+                print("1か2で選択してください。")
+                exit()
 
             if self.mode == "2" or self.mode == "3":
                 if len(df) < self.iterations[0]:
@@ -214,22 +237,20 @@ class calc_acf:
                 for i in [i / 10 for i in range(5, 11)]: # 50%~100%で計算する
                     # deep copy
                     part_df = df_data.copy()
-                    index = df.copy()
 
                     part_iterations = int(iterations * i) # 計算回数をint型で作成
                     part_df = part_df[:part_iterations] # dfの上からpart_iterations分だけ取り出す
                     acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True) # 自己相関の計算
-                    index = index["times"][:part_iterations]*0.0002 # 出力用indexの作成準備
+                    index = pd.Series([times*0.0002 for times in range(part_iterations)]) # 出力用indexの作成準備
                     out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index]) # 出力用にデータをpdで成形
                     self.write_file(out_pd, path, percentage=i) # データの出力
             elif self.mode == "2":
                 part_df = df_data.copy()
-                index = df.copy()
 
                 part_iterations = int(self.iterations[0])
                 part_df = part_df[:part_iterations]
                 acf = sm.tsa.stattools.acf(part_df, nlags=part_iterations, fft=True)
-                index = index["times"][:part_iterations]*0.0002
+                index = pd.Series([times*0.0002 for times in range(part_iterations)])
                 out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
                 self.write_file(out_pd, path) 
             elif self.mode == "3":
@@ -237,12 +258,10 @@ class calc_acf:
                 acf = df_data.copy()
 
                 for i in range(self.CONTINUOUS):
-                    index = df.copy()
-
                     part_iterations = int(self.iterations[i])
                     acf = sm.tsa.stattools.acf(acf, nlags=part_iterations, fft=True)
                     acf = acf[:part_iterations]
-                    index = index["times"][:part_iterations]*0.0002
+                    index = pd.Series([times*0.0002 for times in range(part_iterations)])
                     out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
                     self.write_file(out_pd, path, iteration=i)
             
