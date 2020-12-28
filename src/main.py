@@ -1,7 +1,7 @@
 """
 ==============================
- 2020/12/04
- Kohei Rikiishi
+ 2020/12/29
+ rkouhei
 ==============================
 """
 
@@ -21,7 +21,7 @@ class calc_acf:
     mode = 0 # 計算モード選択用変数
     iterations = [] # 計算回数指定用変数
     path = "" # 読み込み対象のファイルへのパス
-    sep = "" # ファイルの区切り文字の種類
+    sep = "1" # ファイルの区切り文字の種類
     out_dir = "" # 書き込みを行うディレクトリ
     CONTINUOUS = 3 # mode3のとき、何回連続して計算をするか
 
@@ -40,11 +40,9 @@ class calc_acf:
         print("分析したいファイルへのパスを入力してください: ", end="")
         path = input()
 
-        print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
-        sep = input()
-
         print("計算モードを選択してください(固定: 1, 任意: 2, 連続任意: 3): ", end="")
         mode = input()
+        
         if mode == "2":
             print("計算回数を入力してください: ", end="")
             iteration = input()
@@ -55,7 +53,10 @@ class calc_acf:
                 print("計算回数には、数字を入力してください。")
                 exit()
         elif mode == "3":
-            for i in range(1,self.CONTINUOUS+1):
+            print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
+            sep = input()
+
+            for i in range(1, self.CONTINUOUS+1):
                 print(i, "回目の計算回数を入力してください: ", end="")
                 iteration = input()
                 try:
@@ -64,7 +65,7 @@ class calc_acf:
                 except:
                     print("計算回数には、数字を入力してください。")
                     exit()
-            sorted_iterations = sorted(self.iterations ,reverse=True)
+            sorted_iterations = sorted(self.iterations, reverse=True)
             if sorted_iterations != self.iterations:
                     print("後半のずらし回数が前半より多くなっています。")
                     exit()
@@ -260,9 +261,9 @@ class calc_acf:
                 for i in range(self.CONTINUOUS):
                     part_iterations = int(self.iterations[i])
                     acf = sm.tsa.stattools.acf(acf, nlags=part_iterations, fft=True)
-                    acf = acf[:part_iterations]
+                    # acf = acf[:part_iterations] # データの切り抜き
                     index = pd.Series([times*0.0002 for times in range(part_iterations)])
-                    out_pd = pd.Series(acf, index=['{:.4f}'.format(i) for i in index])
+                    out_pd = pd.Series(acf[:part_iterations], index=['{:.4f}'.format(i) for i in index])
                     self.write_file(out_pd, path, iteration=i)
             
             bar.update(1) # プログレスバーの更新
