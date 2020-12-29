@@ -6,7 +6,7 @@
 """
 
 # ライブラリのインポート
-from calc_acf import mode1, mode2, mode3
+from calc_acf import mode1, mode2, mode3, mode6
 
 def select_mode():
     """
@@ -23,7 +23,7 @@ def select_mode():
     print("分析したいファイルへのパスを入力してください: ", end="")
     path = input()
 
-    print("計算モードを選択してください(固定: 1, 任意: 2, 連続任意: 3, 水増し計算: 4): ", end="")
+    print("計算モードを選択してください(固定: 1, 任意(part data): 2, 連続任意: 3, 水増し計算: 4, 水増しのみ: 5, 任意(all data): 6): ", end="")
     mode = input()
     try:
         mode = int(mode)
@@ -37,6 +37,8 @@ def select_mode():
         acf = mode2.method(path)
     elif mode == 3:
         acf = mode3.method(path)
+    elif mode == 6:
+        acf = mode6.method(path)
     else:
         print("存在しないモードです。")
         exit()
