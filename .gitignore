@@ -4,18 +4,21 @@ data/**
 
 # output files directory
 ## each mode directory
-out/mode1/**
+out/mode1/**/*.txt
 !out/mode1/.gitkeep
-out/mode2/**
+out/mode2/**/*.txt
 !out/mode2/.gitkeep
-out/mode3/**
+out/mode3/**/*.txt
 !out/mode3/.gitkeep
-out/mode4/**
+out/mode4/**/*.txt
 !out/mode4/.gitkeep
-out/mode5/**
+out/mode5/**/*.txt
 !out/mode5/.gitkeep
-out/mode6/**
+out/mode6/**/*.txt
 !out/mode6/.gitkeep
+
+## mode4: directory in the midway of calculation
+!out/mode4/midway_cal/.gitkeep
 
 # cache files
 **/__pycache__/
