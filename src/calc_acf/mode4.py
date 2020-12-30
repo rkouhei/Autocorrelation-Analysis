@@ -9,8 +9,6 @@
 from utility.handling_file_directory import read_file, make_directory
 from utility.handling_data import inflated, read_iteration, read_index_quantity, read_sep
 import os
-import datetime
-import shutil
 import glob
 import re
 import statsmodels.api as sm

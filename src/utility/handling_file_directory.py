@@ -10,7 +10,6 @@ import os
 import datetime
 import glob
 import re
-import statsmodels.api as sm
 import pandas as pd
 from tqdm import tqdm
 

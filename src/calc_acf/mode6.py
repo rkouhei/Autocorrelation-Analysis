@@ -9,8 +9,6 @@
 from utility.handling_file_directory import read_file, make_directory
 from utility.handling_data import read_iteration, read_sep, check_length
 import os
-import datetime
-import glob
 import re
 import statsmodels.api as sm
 import pandas as pd
