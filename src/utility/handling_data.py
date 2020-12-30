@@ -8,6 +8,15 @@
 # ライブラリのインポート
 import pandas as pd
 
+def read_sep():
+    """
+    読み込み対象のデータの区切り文字が、タブかスペースか指定。
+    """
+
+    print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
+    sep = input()
+    return sep
+
 def read_iteration():
     """
     自己相関係数の計算で使用する、「ずらす回数」を読み込む。
@@ -30,6 +39,35 @@ def read_iteration():
         exit()
 
     return iteration
+
+def read_iterations(CONTINUOUS):
+    """
+    自己相関係数の計算で使用する、「ずらす回数」を読み込む。
+
+    Input
+    ------
+    CONTINUOUS: iterationを入力する回数
+
+    Output
+    ------
+    iterations : ずらす回数の配列
+
+    Raises
+    ------
+    後半のずらし回数が前半より多くなったとき。
+    """
+    
+    iterations = [] # ずらす回数
+
+    for i in range(1, CONTINUOUS+1):
+        print(i, "回目の", end="")
+        iterations.append(read_iteration())
+    sorted_iterations = sorted(iterations, reverse=True)
+    if sorted_iterations != iterations:
+        print("後半のずらし回数が前半より多くなっています。")
+        exit()
+
+    return iterations
 
 def read_index_quantity():
     """
@@ -77,6 +115,26 @@ def read_index_quantity():
         exit()
 
     return start_time, end_time, quantity
+
+def check_length(df_array, path_array, iteration):
+    """
+    ずらす回数がデータ数より多ければアラートする。
+
+    Input
+    ------
+    df_array   : 読み込んだデータ群の配列
+    path_array : 元データのファイルパス配列
+
+    Raises
+    ------
+    ずらす回数が、データ数よりも多い時。
+    """
+
+    for df, path in zip(df_array, path_array):
+        if len(df) < iteration:
+            print(path)
+            print("上記のファイルのデータ数より、ずらす回数が多くなっています。")
+            exit()
 
 def inflated(df, start, end, quantity):
     """

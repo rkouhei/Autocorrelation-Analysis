@@ -7,7 +7,7 @@
 
 # ライブラリのインポート
 from utility.handling_file_directory import read_file, make_directory
-from utility.handling_data import inflated, read_iteration, read_index_quantity
+from utility.handling_data import inflated, read_iteration, read_index_quantity, read_sep
 import os
 import datetime
 import shutil
@@ -34,8 +34,7 @@ class method:
         path : 読み込みたいのファイルへのパス(一括指定可)
         """
 
-        print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
-        self.sep = input()
+        self.sep = read_sep()
         self.path = path
 
     def remove_midway_files(self, out_base_dir):
@@ -196,6 +195,7 @@ class method:
         """
         水増しの実行。
         """
+        
         df_array, path_array = read_file(self.path, self.sep) # データの読み込み
         out_dir, out_base_dir = make_directory(self.mode) # 書き込みを行うディレクトリ
         self.remove_midway_files(out_base_dir)

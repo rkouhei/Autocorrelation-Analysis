@@ -7,6 +7,7 @@
 
 # ライブラリのインポート
 from utility.handling_file_directory import read_file, make_directory
+from utility.handling_data import read_iterations, read_sep, check_length
 import os
 import datetime
 import glob
@@ -21,7 +22,7 @@ class method:
     path = "" # 読み込み対象のファイルへのパス
     sep = "" # ファイルの区切り文字の種類
     iterations = [] # 計算回数指定用変数
-    CONTINUOUS = 3 # mode3のとき、何回連続して計算をするか
+    CONTINUOUS = 3 # 何回連続して計算をするか
 
     def __init__(self, path):
         """
@@ -31,52 +32,11 @@ class method:
         Input
         ------
         path : 読み込みたいのファイルへのパス(一括指定可)
-
-        Raises
-        ------
-        計算回数で、数字以外を入力した時。
         """
 
-        print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
-        self.sep = input()
-
-        for i in range(1, self.CONTINUOUS+1):
-            print(i, "回目の計算回数を入力してください: ", end="")
-            iteration = input()
-            try:
-                iteration = int(iteration) # 数字以外はexceptへ
-                self.iterations.append(iteration)
-            except:
-                print("計算回数には、数字を入力してください。")
-                exit()
-        sorted_iterations = sorted(self.iterations, reverse=True)
-        if sorted_iterations != self.iterations:
-                print("後半のずらし回数が前半より多くなっています。")
-                exit()
-
+        self.sep = read_sep()
+        self.iterations = read_iterations(self.CONTINUOUS)
         self.path = path
-
-    def check_length(self, df_array, path_array):
-        """
-        ずらす回数がデータ数より多ければアラートする。
-
-        Input
-        ------
-        df_array   : 読み込んだデータ群の配列
-        path_array : 元データのファイルパス配列
-
-        Raises
-        ------
-        ずらす回数が、データ数よりも多い時。
-        """
-
-        for df, path in zip(df_array, path_array):
-            if len(df) < self.iterations[0]:
-                print(path)
-                print("上記のファイルのデータ数より、ずらす回数が多くなっています。")
-                exit()
-
-        
 
     def write_file(self, df, path, out_dir, iteration):
         """
@@ -137,7 +97,8 @@ class method:
         """
         計算の実行。
         """
+        
         df_array, path_array = read_file(self.path, self.sep) # データの読み込み
-        self.check_length(df_array, path_array) # ずらす回数とデータ数を比較しておく
-        out_dir = make_directory(self.mode) # 書き込みを行うディレクトリ
+        check_length(df_array, path_array, self.iterations[0]) # ずらす回数とデータ数を比較しておく
+        out_dir, _ = make_directory(self.mode) # 書き込みを行うディレクトリ
         self.calc(df_array, path_array, out_dir) # 計算の実行と保存

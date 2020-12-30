@@ -95,6 +95,7 @@ class method:
         """
         計算の実行。
         """
+        
         df_array, path_array = read_file(self.path, self.sep)
-        out_dir = make_directory(self.mode) # 書き込みを行うディレクトリ
+        out_dir, _ = make_directory(self.mode) # 書き込みを行うディレクトリ
         self.calc(df_array, path_array, out_dir)

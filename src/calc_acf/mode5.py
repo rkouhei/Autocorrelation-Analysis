@@ -7,7 +7,7 @@
 
 # ライブラリのインポート
 from utility.handling_file_directory import read_file, make_directory
-from utility.handling_data import inflated, read_index_quantity
+from utility.handling_data import inflated, read_index_quantity, read_sep
 import os
 import datetime
 import glob
@@ -32,8 +32,7 @@ class method:
         path : 読み込みたいのファイルへのパス(一括指定可)
         """
 
-        print("分析したいファイルの区切り文字を入力してください(スペース: 1, タブ: 2): ", end="")
-        self.sep = input()
+        self.sep = read_sep()
         self.path = path
 
     def write_settings(self, out_dir, start_time, end_time, quantity):
@@ -57,7 +56,7 @@ class method:
             quantity_text = "必要データ数 : " + str(quantity) + "\n"
             f.writelines([outline, start_text, end_text, quantity_text])
 
-    def write_file(self, df, path, out_dir, start_time, end_time, quantity):
+    def write_file(self, df, path, out_dir, quantity):
         """
         水増し結果を出力する。
         出力はindexの有無で、2種類存在する。
@@ -76,11 +75,11 @@ class method:
         ext = os.path.splitext(input_fname) # ファイル名と拡張子に分解
 
         # index有りのファイル名
-        out_fname = ext[0] + "_" + str(quantity) + "_from_" + str(start_time) + "_to_" + str(end_time) + ext[1]
+        out_fname = ext[0] + "_" + str(quantity) + "_inflated" + ext[1]
         out_path = out_dir + out_fname
 
         # indexなしのファイル名
-        out_fname_noindex = ext[0] + "_" + str(quantity) + "_from_" + str(start_time) + "_to_" + str(end_time) + "_noindex" + ext[1]
+        out_fname_noindex = ext[0] + "_" + str(quantity) + "_inflated" + "_noindex" + ext[1]
         out_path_noindex = out_dir + out_fname_noindex
 
         df.to_csv(out_path, sep=" ", header=False, encoding="utf-8") # index有り
@@ -111,7 +110,7 @@ class method:
             inflated_df = inflated(df_data, start_time, end_time, quantity)
             index = pd.Series([times*0.0002 for times in range(quantity)])
             out_pd = pd.Series(inflated_df, index=['{:.4f}'.format(i) for i in index])
-            self.write_file(out_pd, path, out_dir, start_time, end_time, quantity)
+            self.write_file(out_pd, path, out_dir, quantity)
             
             bar.update(1) # プログレスバーの更新
     
@@ -119,6 +118,7 @@ class method:
         """
         水増しの実行。
         """
+        
         df_array, path_array = read_file(self.path, self.sep) # データの読み込み
-        out_dir = make_directory(self.mode) # 書き込みを行うディレクトリ
+        out_dir, _ = make_directory(self.mode) # 書き込みを行うディレクトリ
         self.calc(df_array, path_array, out_dir) # 水増しの実行と保存
