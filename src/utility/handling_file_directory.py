@@ -131,20 +131,21 @@ def make_directory(mode):
     # モード番号をstrで
     mode_name = "mode" + str(mode)
 
-    #日付をフォルダ名に整形
+    # 日付をフォルダ名に整形
     year = str(dt_now.year)
     month = str(dt_now.month).zfill(2)
     day = str(dt_now.day).zfill(2)
     hour = str(dt_now.hour).zfill(2)
     minute = str(dt_now.minute).zfill(2)
     second = str(dt_now.second).zfill(2)
-    dirname = year + month + day + "-" + hour + "." + minute + "." + second #フォルダ名を定義
-    out_dir = os.path.dirname(__file__) + "/../../out/" + mode_name + "/" + dirname + "/" #生成フォルダのパス
+    dirname = year + month + day + "-" + hour + "." + minute + "." + second # フォルダ名を定義
+    out_dir = os.path.dirname(__file__) + "/../../out/" + mode_name + "/" + dirname + "/" # 生成フォルダのパス
+    out_base_dir = os.path.dirname(__file__) + "/../../out/" + mode_name + "/" # 生成フォルダの一つ上の階層のパス
 
     if os.path.isdir(out_dir):
         print("ディレクトリが既に存在しています。")
         exit()
     else:
-        os.makedirs(out_dir) #フォルダを作成
+        os.makedirs(out_dir) # フォルダを作成
 
-    return out_dir
+    return out_dir, out_base_dir

@@ -6,7 +6,7 @@
 """
 
 # ライブラリのインポート
-from calc_acf import mode1, mode2, mode3, mode6
+from calc_acf import mode1, mode2, mode3, mode4, mode5, mode6
 
 def select_mode():
     """
@@ -37,6 +37,10 @@ def select_mode():
         acf = mode2.method(path)
     elif mode == 3:
         acf = mode3.method(path)
+    elif mode == 4:
+        acf = mode4.method(path)
+    elif mode == 5:
+        acf = mode5.method(path)
     elif mode == 6:
         acf = mode6.method(path)
     else:
