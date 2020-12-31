@@ -51,6 +51,7 @@ def read_file(path, sep):
     存在しないディレクトリやパスが指定された時。
     入力にテキストファイル以外のものが含まれている時。
     ファイルの区切り文字を誤選択した時。
+    ファイルが正しく読み込まれなかった時。
     """
 
     df_array = [] # 読み込んだテキストのdf配列
@@ -68,6 +69,14 @@ def read_file(path, sep):
     bar = tqdm(total=len(path_array))
     bar.set_description("read_files")
 
+    if sep == "1": # スペースの場合
+        sep_text = " "
+    elif sep == "2": # タブの場合
+        sep_text = "\t"
+    else:
+        print("1か2で選択してください。")
+        exit()
+
     for file_path in path_array:
         ext = os.path.splitext(file_path)[1]
         if ext != ".txt":
@@ -75,29 +84,22 @@ def read_file(path, sep):
             exit()
 
         # データの読み込み
-        if sep == "1": # スペースの場合
-            df = pd.read_table(
-                file_path,
-                header=None,
-                sep=" ",
-                names=("times", "data"),
-                encoding="utf-8"
-            )
-            df = df.dropna(how="all")
-            df = df.reset_index()
-        elif sep == "2": # タブの場合
-            df = pd.read_table(
-                file_path,
-                header=None,
-                sep="\t",
-                names=("times", "data"),
-                encoding="utf-8"
-            )
-            df = df.dropna(how="all")
-            df = df.reset_index()
-        else:
-            print("1か2で選択してください。")
-            exit()
+        df = pd.read_table(
+            file_path,
+            header=None,
+            sep=sep_text,
+            names=("times", "data"),
+            encoding="utf-8"
+        )
+
+        if df.isnull().all()["data"]:
+            print(file_path)
+            print("読み込んだデータが、正しく読み込まれませんでした。タブとスペースの選択を間違えている可能性があります。")
+            print("ファイルの読み込みを続行しますか？(やめる: 1, 続ける: Enter)")
+            read_continue = input()
+            if read_continue == "1":
+                print("読み込みを中止します。")
+                exit()
 
         df_array.append(df)
         bar.update(1)  # プログレスバーの更新
