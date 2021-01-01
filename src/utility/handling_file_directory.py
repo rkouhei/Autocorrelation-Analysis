@@ -101,6 +101,9 @@ def read_file(path, sep):
                 print("読み込みを中止します。")
                 exit()
 
+        df = df.dropna(how="all")
+        df = df.reset_index()
+
         df_array.append(df)
         bar.update(1)  # プログレスバーの更新
 

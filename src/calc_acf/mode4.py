@@ -46,7 +46,7 @@ class method:
         for p in path_array:
             os.remove(p)
 
-    def write_settings(self, out_dir, start_time, end_time, quantity, iteration):
+    def write_settings(self, out_dir, path, start_time, end_time, quantity, iteration):
         """
         水増しの設定を出力する。
 
@@ -59,7 +59,10 @@ class method:
         iteration: 何回目の計算か
         """
 
-        path = out_dir + "settings" + str(iteration+1) + ".txt"
+        input_fname = re.split("/", path)[-1] # ファイルネームだけ取り出す
+        ext = os.path.splitext(input_fname) # ファイル名と拡張子に分解
+
+        path = out_dir + "settings_" + ext[0] + "_cal" + str(iteration+1) + ".txt"
 
         with open(path, mode='w') as f:
             outline = "水増し 設定情報\n"
@@ -82,7 +85,7 @@ class method:
         iteration: 何回目の計算か
         """
 
-        path = out_base_dir + "midway_cal/" + "settings" + str(iteration+1) + ".txt"
+        path = out_base_dir + "midway_cal/" + "settings_cal" + str(iteration+1) + ".txt"
 
         with open(path, mode='w') as f:
             outline = "水増し 設定情報\n"
@@ -170,7 +173,7 @@ class method:
                 if i > 0:
                     # 開始indexと終了index
                     start_time, end_time, quantity = read_index_quantity()
-                    self.write_settings(out_dir, start_time, end_time, quantity, iteration=i) # 保存
+                    self.write_settings(out_dir, path, start_time, end_time, quantity, iteration=i) # 保存
                     inflated_df = pd.Series(inflated_df)
                     inflated_df = inflated(inflated_df, start_time, end_time, quantity) # 水増しdf
                 
