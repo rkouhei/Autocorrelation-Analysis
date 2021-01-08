@@ -98,7 +98,7 @@ def read_index_quantity():
     except:
         print("時間は、小数点で指定してください。")
         exit()
-    if ((start_time*10000) % 2) != 0 or ((end_time*10000) % 2) != 0:
+    if (round(start_time*10000) % 2) != 0 or (round(end_time*10000) % 2) != 0:
         print("時間は、0.0002s刻みで指定してください。")
         exit()
     elif start_time > end_time:
